@@ -1,4 +1,4 @@
-from src.Models import *
+from src.model.CollisionDirection import *
 
 
 def detect_ball_wall_collision(ball, wall):
@@ -18,6 +18,7 @@ def detect_ball_bat_collision(ball, bat):
     if ball.bottom <= bat.top and ball.top >= bat.bottom:  # ball is in the bat's row
         if ball.right <= bat.right and ball.left >= bat.left:  # ball is above the bat
             return CollisionDirection(CollisionDirection.Primary.TOP, None)
+        # the ball.right part is to prevent the case where the ball just falls on the bat's left side
         elif ball.left <= bat.right <= ball.right:  # ball hit the bat's right side
             if ball.vertical_center() >= bat.vertical_center():
                 return CollisionDirection(
@@ -29,6 +30,7 @@ def detect_ball_bat_collision(ball, bat):
                     CollisionDirection.Primary.RIGHT,
                     CollisionDirection.Secondary.RIGHT_BOTTOM
                 )
+        # the ball.left part is to prevent the case where the ball just falls on the bat's right side
         elif ball.right >= bat.left >= ball.left:  # ball hit the bat's left side
             if ball.vertical_center() >= bat.vertical_center():
                 return CollisionDirection(
