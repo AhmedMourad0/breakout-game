@@ -41,7 +41,7 @@ result = Result()
 fleet = Fleet(
     FLEET_SPACING,
     FLEET_HORIZONTAL_PADDING,
-    4,
+    5,
     TargetsRowSpecs(TargetsGroupSpecs(
         TargetSpecs(
             TARGET_WIDTH,
@@ -97,7 +97,7 @@ fleet = Fleet(
                 (0, 0, 1)
             ), GROUP_SPACING, 3
         )
-    ), TargetsRowSpecs(TargetsGroupSpecs(
+    ), EmptyTargetsRowSpecs(), TargetsRowSpecs(TargetsGroupSpecs(
         TargetSpecs(
             TARGET_WIDTH,
             TARGET_HEIGHT,

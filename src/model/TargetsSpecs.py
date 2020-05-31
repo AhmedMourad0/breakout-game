@@ -1,10 +1,3 @@
-def _find_group_height(group):
-    if type(group) is EmptyTargetsGroupSpecs:
-        return 0
-    else:
-        return group.target_specs.height
-
-
 class TargetsRowSpecs:
     def __init__(self, *target_groups_specs):
         self.target_groups_specs = target_groups_specs
@@ -31,12 +24,14 @@ class EmptyTargetsGroupSpecs:
 
 
 class TargetSpecs:
-
     def __init__(self, width, height, color):
         self.width = width
         self.height = height
         self.color = color
 
-    @classmethod
-    def calculate_width(cls, window, spacing, horizontal_padding, max_targets):
-        return window.inner.width() - (2 * horizontal_padding) - spacing * (max_targets - 1)
+
+def _find_group_height(group):
+    if type(group) is EmptyTargetsGroupSpecs:
+        return 0
+    else:
+        return group.target_specs.height

@@ -47,12 +47,13 @@ def draw_bat(bat):
 def draw_fleet(window, fleet):
     width_scale = fleet.width_scale_for(window)
     for row in fleet.rows:
-        if row.position_on_screen >= 0:
+        if row.position_on_screen >= 0 and type(row) is not EmptyTargetsRow:
             _draw_targets_row(
                 row=row,
                 row_height=fleet.row_height,
                 row_bottom=window.inner.top - row.position_on_screen * (
-                            fleet.row_height + fleet.spacing) - fleet.row_height,
+                        fleet.row_height + fleet.spacing
+                ) - fleet.row_height,
                 width_scale=width_scale
             )
 
