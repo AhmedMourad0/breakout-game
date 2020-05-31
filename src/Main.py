@@ -1,13 +1,14 @@
 from src.CollisionDetectors import *
 from src.Drawing import *
 from src.model.CollisionDirection import *
-from src.model.Models import *
+from src.model.Core import *
+from src.model.Targets import *
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 500
 WINDOW_INSETS = 20
 
-wall = Wall.bottomless(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_INSETS)
+window = Window(WINDOW_WIDTH, WINDOW_HEIGHT, Wall.bottomless(WINDOW_INSETS))
 
 BAT_WIDTH = 100
 BAT_HEIGHT = 10
@@ -21,88 +22,134 @@ BALL_LENGTH = 20
 BALL_INITIAL_X = 100
 BALL_INITIAL_Y = 100
 
-ball = Ball(BALL_INITIAL_X, BALL_INITIAL_Y, BALL_LENGTH)
+ball = Ball(window, BALL_INITIAL_X, BALL_INITIAL_Y, BALL_LENGTH)
+
+FLEET_SPACING = 10
+FLEET_HORIZONTAL_PADDING = 10
 
 ROW_VERTICAL_PADDING = 10
 ROW_MAX_TARGETS = 13
+ROW_HORIZONTAL_PADDING = 10
 
-TARGET_HORIZONTAL_PADDING = 10
-TARGET_WIDTH = wall.width() - (2 * TARGET_HORIZONTAL_PADDING) - TARGET_HORIZONTAL_PADDING * (ROW_MAX_TARGETS - 1)
-TARGET_HEIGHT = 40
+GROUP_SPACING = 10
 
-timeInterval = 1
+TARGET_WIDTH = (window.inner.width() - 2 * FLEET_HORIZONTAL_PADDING) / 13
+TARGET_HEIGHT = 20
 
 result = Result()
 
 fleet = Fleet(
-    Row(
-        TargetGroupSpecs(
+    FLEET_SPACING,
+    FLEET_HORIZONTAL_PADDING,
+    4,
+    TargetsRowSpecs(TargetsGroupSpecs(
+        TargetSpecs(
+            TARGET_WIDTH,
+            TARGET_HEIGHT,
+            (1, 0, 1)
+        ), GROUP_SPACING, 4
+    ), TargetsGroupSpecs(
+        TargetSpecs(
+            TARGET_WIDTH,
+            TARGET_HEIGHT,
+            (0, 0, 1)
+        ), GROUP_SPACING, 5
+    ), TargetsGroupSpecs(
+        TargetSpecs(
+            TARGET_WIDTH,
+            TARGET_HEIGHT,
+            (1, 0, 1)
+        ), GROUP_SPACING, 4
+    )
+    ), TargetsRowSpecs(
+        TargetsGroupSpecs(
             TargetSpecs(
                 TARGET_WIDTH,
                 TARGET_HEIGHT,
-                TARGET_HORIZONTAL_PADDING,
-                (1, 0, 1)
-            ), ROW_VERTICAL_PADDING, 4
-        ), TargetGroupSpecs(
-            TargetSpecs(
-                TARGET_WIDTH,
-                TARGET_HEIGHT,
-                TARGET_HORIZONTAL_PADDING,
                 (0, 0, 1)
-            ), ROW_VERTICAL_PADDING, 5
-        ), TargetGroupSpecs(
+            ), GROUP_SPACING, 3
+        ), TargetsGroupSpecs(
+            TargetSpecs(
+                TARGET_WIDTH,
+                TARGET_HEIGHT - 10,
+                (1, 0, 1)
+            ), GROUP_SPACING, 7
+        ), TargetsGroupSpecs(
             TargetSpecs(
                 TARGET_WIDTH,
                 TARGET_HEIGHT,
-                TARGET_HORIZONTAL_PADDING,
-                (1, 0, 1)
-            ), ROW_VERTICAL_PADDING, 4
+                (0, 0, 1)
+            ), GROUP_SPACING, 3
         )
-    ), Row(
-        TargetGroupSpecs(
+    ), TargetsRowSpecs(
+        TargetsGroupSpecs(
             TargetSpecs(
                 TARGET_WIDTH,
                 TARGET_HEIGHT,
-                TARGET_HORIZONTAL_PADDING,
                 (0, 0, 1)
-            ), ROW_VERTICAL_PADDING, 3
-        ), TargetGroupSpecs(
+            ), GROUP_SPACING, 3
+        ), EmptyTargetsGroupSpecs(
+            (TARGET_WIDTH + GROUP_SPACING) * 7
+        ), TargetsGroupSpecs(
             TargetSpecs(
                 TARGET_WIDTH,
                 TARGET_HEIGHT,
-                TARGET_HORIZONTAL_PADDING,
-                (1, 0, 1)
-            ), ROW_VERTICAL_PADDING, 7
-        ), TargetGroupSpecs(
-            TargetSpecs(
-                TARGET_WIDTH,
-                TARGET_HEIGHT,
-                TARGET_HORIZONTAL_PADDING,
                 (0, 0, 1)
-            ), ROW_VERTICAL_PADDING, 3
+            ), GROUP_SPACING, 3
         )
+    ), TargetsRowSpecs(TargetsGroupSpecs(
+        TargetSpecs(
+            TARGET_WIDTH,
+            TARGET_HEIGHT,
+            (1, 0, 1)
+        ), GROUP_SPACING, 4
+    ), TargetsGroupSpecs(
+        TargetSpecs(
+            TARGET_WIDTH,
+            TARGET_HEIGHT,
+            (0, 0, 1)
+        ), GROUP_SPACING, 5
+    ), TargetsGroupSpecs(
+        TargetSpecs(
+            TARGET_WIDTH,
+            TARGET_HEIGHT,
+            (1, 0, 1)
+        ), GROUP_SPACING, 4
+    )
     )
 )
 
-mouse_x = 0
+MOUSE_INITIAL_X = window.inner.horizontal_center()
+MOUSE_INITIAL_Y = window.inner.vertical_center()
+MOUSE_X_LOWER_LIMIT = window.inner.left + bat.width() / 2
+MOUSE_X_UPPER_LIMIT = window.inner.right - bat.width() / 2
 
+mouse = Mouse(
+    MOUSE_INITIAL_X,
+    MOUSE_INITIAL_Y,
+    MOUSE_X_LOWER_LIMIT,
+    MOUSE_X_UPPER_LIMIT,
+    glutWarpPointer
+)
 
-def possible_target_per_row():
-    return wall.width() / (TARGET_WIDTH + (TARGET_HORIZONTAL_PADDING * 2))
+timeInterval = 1
+is_paused = False
 
 
 # noinspection PyUnusedLocal
 def mouse_motion(x, y):
-    global mouse_x
-    mouse_x = x
+    global mouse
+    if not is_paused:
+        mouse.move(x, y)
 
 
 # noinspection PyUnusedLocal
 def keyboard(key, x, y):
-    if key == b"q":
+    global is_paused
+    if key.lower() == b"q":
         sys.exit(0)
     elif key == chr(27).encode():  # ESC key
-        sys.exit(0)
+        is_paused = not is_paused
 
 
 # noinspection PyUnusedLocal
@@ -113,111 +160,74 @@ def keyboard_special(key, x, y):
 
 # noinspection PyUnusedLocal
 def timer(v):
-    display()
+    if not is_paused:
+        display()
     glutTimerFunc(timeInterval, timer, 1)
 
 
 def display():
     glClear(GL_COLOR_BUFFER_BIT)
-
-    draw_results_text()
-
-    update_ball_position()
-    glColor(1, 1, 1)
-    draw_rectangle(ball)
-
+    ball.move_one_frame()
     handle_ball_wall_collision()
-
-    update_bat_position()
-    draw_rectangle(bat)
-
+    bat.move_by_horizontal_center(mouse)
     handle_ball_bat_collision()
-
-    adjust_ball_position()
-
+    draw_results_text(window, result)
+    draw_ball(ball)
+    draw_bat(bat)
+    draw_fleet(window, fleet)
     glutSwapBuffers()
-
-
-def draw_results_text():
-    text = "PC: " + str(result.pc)
-    pc_text_y = WINDOW_HEIGHT - 60
-    draw_text(text, 10, pc_text_y)
-
-    text = "Player: " + str(result.player)
-    draw_text(text, 10, pc_text_y - 40)
 
 
 def handle_ball_wall_collision():
     global ball
 
-    ball_wall_collision = detect_ball_wall_collision(ball, wall)
+    collision_direction = detect_ball_wall_collision(ball, window)
 
-    if ball_wall_collision is None:
+    if collision_direction is None:
         return
 
-    if ball_wall_collision.primary == CollisionDirection.Primary.RIGHT:
+    if collision_direction.primary == CollisionDirection.Primary.RIGHT:
         ball.delta_x = -abs(ball.delta_x)
-    elif ball_wall_collision.primary == CollisionDirection.Primary.LEFT:
+    elif collision_direction.primary == CollisionDirection.Primary.LEFT:
         ball.delta_x = abs(ball.delta_x)
-    elif ball_wall_collision.primary == CollisionDirection.Primary.TOP:
+    elif collision_direction.primary == CollisionDirection.Primary.TOP:
         ball.delta_y = -abs(ball.delta_y)
-    elif ball_wall_collision.primary == CollisionDirection.Primary.BOTTOM:
-        if ball.top < wall.bottom:  # game over
-            ball = Ball(BALL_INITIAL_X, BALL_INITIAL_Y, BALL_LENGTH)
+    elif collision_direction.primary == CollisionDirection.Primary.BOTTOM:
+        if ball.top < window.inner.bottom:  # game over
+            ball = Ball(window, BALL_INITIAL_X, BALL_INITIAL_Y, BALL_LENGTH)
             ball.delta_x = abs(ball.delta_x)
             ball.delta_y = abs(ball.delta_y)
             result.pc = result.pc + 1
 
 
 def handle_ball_bat_collision():
+    collision_direction = detect_ball_bat_collision(ball, bat)
 
-    ball_bat_collision = detect_ball_bat_collision(ball, bat)
-
-    if ball_bat_collision is None:
+    if collision_direction is None:
         return
 
-    if ball_bat_collision.primary == CollisionDirection.Primary.RIGHT:
-        if ball_bat_collision.secondary == CollisionDirection.Secondary.RIGHT_TOP:
+    if collision_direction.primary == CollisionDirection.Primary.RIGHT:
+        if collision_direction.secondary == CollisionDirection.Secondary.RIGHT_TOP:
             ball.delta_x = abs(ball.delta_x)
             ball.delta_y = abs(ball.delta_y)
-            ball.update_left(bat.right)
-        elif ball_bat_collision.secondary == CollisionDirection.Secondary.RIGHT_BOTTOM:
+            ball.move_by_left(bat.right)
+        elif collision_direction.secondary == CollisionDirection.Secondary.RIGHT_BOTTOM:
             ball.delta_x = abs(ball.delta_x)
             ball.delta_y = -abs(ball.delta_y)
-            ball.update_left(bat.right)
-    elif ball_bat_collision.primary == CollisionDirection.Primary.LEFT:
-        if ball_bat_collision.secondary == CollisionDirection.Secondary.LEFT_TOP:
+            ball.move_by_left(bat.right)
+    elif collision_direction.primary == CollisionDirection.Primary.LEFT:
+        if collision_direction.secondary == CollisionDirection.Secondary.LEFT_TOP:
             ball.delta_x = -abs(ball.delta_x)
             ball.delta_y = abs(ball.delta_y)
-            ball.update_right(bat.left)
-        elif ball_bat_collision.secondary == CollisionDirection.Secondary.LEFT_BOTTOM:
+            ball.move_by_right(bat.left)
+        elif collision_direction.secondary == CollisionDirection.Secondary.LEFT_BOTTOM:
             ball.delta_x = -abs(ball.delta_x)
             ball.delta_y = -abs(ball.delta_y)
-            ball.update_right(bat.left)
-    elif ball_bat_collision.primary == CollisionDirection.Primary.TOP:
+            ball.move_by_right(bat.left)
+    elif collision_direction.primary == CollisionDirection.Primary.TOP:
         ball.delta_y = abs(ball.delta_y)
-        ball.update_bottom(bat.top)
+        ball.move_by_bottom(bat.top)
         result.player = result.player + 1
-
-
-def update_ball_position():
-    ball.left = ball.left + ball.delta_x
-    ball.right = ball.right + ball.delta_x
-    ball.top = ball.top + ball.delta_y
-    ball.bottom = ball.bottom + ball.delta_y
-
-
-def update_bat_position():
-    bat_half_width = bat.width() / 2
-    bat.left = mouse_x - bat_half_width
-    bat.right = mouse_x + bat_half_width
-
-
-def adjust_ball_position():
-    if ball.left < wall.left:
-        ball.update_left(wall.left)
-    elif ball.right > wall.right:
-        ball.update_right(wall.right)
 
 
 def init():
