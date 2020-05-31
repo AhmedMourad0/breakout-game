@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class CollisionDirection:
+class CollisionSide:
 
     def __init__(self, primary, secondary):
         self.primary = primary

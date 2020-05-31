@@ -1,6 +1,6 @@
 from src.CollisionDetectors import *
 from src.Drawing import *
-from src.model.CollisionDirection import *
+from src.model.CollisionSide import *
 from src.model.Core import *
 from src.model.Targets import *
 
@@ -18,7 +18,7 @@ BAT_Y = 40
 
 bat = Bat(BAT_INITIAL_X, BAT_Y, BAT_WIDTH, BAT_HEIGHT)
 
-BALL_LENGTH = 20
+BALL_LENGTH = 40
 BALL_INITIAL_X = 100
 BALL_INITIAL_Y = 100
 
@@ -181,18 +181,18 @@ def display():
 def handle_ball_wall_collision():
     global ball
 
-    collision_direction = detect_collision_from_inside(ball, window)
+    collision_direction = detect_collision_from_inside(ball, window.inner)
 
     if collision_direction is None:
         return
 
-    if collision_direction.primary == CollisionDirection.Primary.RIGHT:
+    if collision_direction.primary == CollisionSide.Primary.RIGHT:
         ball.delta_x = -abs(ball.delta_x)
-    elif collision_direction.primary == CollisionDirection.Primary.LEFT:
+    elif collision_direction.primary == CollisionSide.Primary.LEFT:
         ball.delta_x = abs(ball.delta_x)
-    elif collision_direction.primary == CollisionDirection.Primary.TOP:
+    elif collision_direction.primary == CollisionSide.Primary.TOP:
         ball.delta_y = -abs(ball.delta_y)
-    elif collision_direction.primary == CollisionDirection.Primary.BOTTOM:
+    elif collision_direction.primary == CollisionSide.Primary.BOTTOM:
         if ball.top < window.inner.bottom:  # game over
             ball = Ball(window, BALL_INITIAL_X, BALL_INITIAL_Y, BALL_LENGTH)
             ball.delta_x = abs(ball.delta_x)
@@ -206,25 +206,25 @@ def handle_ball_bat_collision():
     if collision_direction is None:
         return
 
-    if collision_direction.primary == CollisionDirection.Primary.RIGHT:
-        if collision_direction.secondary == CollisionDirection.Secondary.RIGHT_TOP:
+    if collision_direction.primary == CollisionSide.Primary.RIGHT:
+        if collision_direction.secondary == CollisionSide.Secondary.RIGHT_TOP:
             ball.delta_x = abs(ball.delta_x)
             ball.delta_y = abs(ball.delta_y)
             ball.move_by_left(bat.right)
-        elif collision_direction.secondary == CollisionDirection.Secondary.RIGHT_BOTTOM:
+        elif collision_direction.secondary == CollisionSide.Secondary.RIGHT_BOTTOM:
             ball.delta_x = abs(ball.delta_x)
             ball.delta_y = -abs(ball.delta_y)
             ball.move_by_left(bat.right)
-    elif collision_direction.primary == CollisionDirection.Primary.LEFT:
-        if collision_direction.secondary == CollisionDirection.Secondary.LEFT_TOP:
+    elif collision_direction.primary == CollisionSide.Primary.LEFT:
+        if collision_direction.secondary == CollisionSide.Secondary.LEFT_TOP:
             ball.delta_x = -abs(ball.delta_x)
             ball.delta_y = abs(ball.delta_y)
             ball.move_by_right(bat.left)
-        elif collision_direction.secondary == CollisionDirection.Secondary.LEFT_BOTTOM:
+        elif collision_direction.secondary == CollisionSide.Secondary.LEFT_BOTTOM:
             ball.delta_x = -abs(ball.delta_x)
             ball.delta_y = -abs(ball.delta_y)
             ball.move_by_right(bat.left)
-    elif collision_direction.primary == CollisionDirection.Primary.TOP:
+    elif collision_direction.primary == CollisionSide.Primary.TOP:
         ball.delta_y = abs(ball.delta_y)
         ball.move_by_bottom(bat.top)
         result.player = result.player + 1
