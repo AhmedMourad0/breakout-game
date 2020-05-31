@@ -181,7 +181,7 @@ def display():
 def handle_ball_wall_collision():
     global ball
 
-    collision_direction = detect_ball_wall_collision(ball, window)
+    collision_direction = detect_collision_from_inside(ball, window)
 
     if collision_direction is None:
         return
@@ -201,7 +201,7 @@ def handle_ball_wall_collision():
 
 
 def handle_ball_bat_collision():
-    collision_direction = detect_ball_bat_collision(ball, bat)
+    collision_direction = detect_collision_from_outside(ball, bat)
 
     if collision_direction is None:
         return
