@@ -1,7 +1,10 @@
 class TargetsRowSpecs:
-    def __init__(self, *target_groups_specs):
+    def __init__(self, spacing, *target_groups_specs):
         self.target_groups_specs = target_groups_specs
+        self.spacing = spacing
         self.height = _find_group_height(max(target_groups_specs, key=_find_group_height))
+        self.width = sum(group.width for group in self.target_groups_specs) + \
+                     (len(self.target_groups_specs) - 1) * self.spacing
 
 
 class EmptyTargetsRowSpecs:
@@ -18,8 +21,8 @@ class TargetsGroupSpecs:
 
 
 class EmptyTargetsGroupSpecs:
-    def __init__(self, width, sealed_balls=0):
-        self.width = width
+    def __init__(self, spacing, size, target_width, sealed_balls=0):
+        self.width = target_width * size + spacing * (size - 1)
         self.sealed_balls = sealed_balls
 
 

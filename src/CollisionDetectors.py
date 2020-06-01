@@ -51,7 +51,7 @@ def detect_collision_from_inside(collider, container):
 
 
 def detect_collision_from_outside(collider, obstacle):
-    if obstacle.top >= collider.bottom >= (obstacle.top - abs(collider.delta_y)) \
+    if obstacle.top >= collider.bottom >= obstacle.vertical_center() \
             and _is_within_obstacle_y_area(collider, obstacle):
         if collider.horizontal_center() >= obstacle.horizontal_center():
             return CollisionSide(
@@ -63,7 +63,7 @@ def detect_collision_from_outside(collider, obstacle):
                 CollisionSide.Primary.TOP,
                 CollisionSide.Secondary.TOP_LEFT
             )
-    elif obstacle.bottom <= collider.top <= (obstacle.bottom + abs(collider.delta_y)) \
+    elif obstacle.bottom <= collider.top <= obstacle.vertical_center() \
             and _is_within_obstacle_y_area(collider, obstacle):
         if collider.horizontal_center() >= obstacle.horizontal_center():
             return CollisionSide(
@@ -104,11 +104,8 @@ def detect_collision_from_outside(collider, obstacle):
 
 
 def _is_within_obstacle_y_area(collider, obstacle):
-    return obstacle.left <= collider.right <= obstacle.right or \
-           obstacle.right >= collider.left >= obstacle.left
+    return collider.right >= obstacle.left and collider.left <= obstacle.right
 
 
 def _is_within_obstacle_x_area(collider, obstacle):
-    return obstacle.top >= collider.bottom >= obstacle.bottom or \
-           obstacle.bottom <= collider.top <= obstacle.top or \
-           (collider.top >= obstacle.top and collider.bottom <= obstacle.bottom)
+    return collider.top >= obstacle.bottom and collider.bottom <= obstacle.top

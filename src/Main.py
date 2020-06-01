@@ -1,3 +1,5 @@
+import time
+
 from src.CollisionDetectors import *
 from src.Drawing import *
 from src.model.CollisionSide import *
@@ -18,7 +20,7 @@ BAT_Y = 40
 
 bat = Bat(BAT_INITIAL_X, BAT_Y, BAT_WIDTH, BAT_HEIGHT)
 
-BALL_LENGTH = 40
+BALL_LENGTH = 20
 BALL_INITIAL_X = 100
 BALL_INITIAL_Y = 100
 
@@ -26,23 +28,27 @@ ball = Ball(window, BALL_INITIAL_X, BALL_INITIAL_Y, BALL_LENGTH)
 
 FLEET_SPACING = 10
 FLEET_HORIZONTAL_PADDING = 10
+FLEET_INITIALLY_VISIBLE_ROW_COUNT = 5
+FLEET_SLIDE_DOWN_TIME_GAP = 10
 
 ROW_VERTICAL_PADDING = 10
 ROW_MAX_TARGETS = 13
-ROW_HORIZONTAL_PADDING = 10
+ROW_SPACING = 10
 
 GROUP_SPACING = 10
 
-TARGET_WIDTH = (window.inner.width() - 2 * FLEET_HORIZONTAL_PADDING) / 13
+TARGET_WIDTH = 50
 TARGET_HEIGHT = 20
 
 result = Result()
 
 fleet = Fleet(
+    window,
     FLEET_SPACING,
     FLEET_HORIZONTAL_PADDING,
-    5,
-    TargetsRowSpecs(TargetsGroupSpecs(
+    FLEET_INITIALLY_VISIBLE_ROW_COUNT,
+    FLEET_SLIDE_DOWN_TIME_GAP,
+    TargetsRowSpecs(ROW_SPACING, TargetsGroupSpecs(
         TargetSpecs(
             TARGET_WIDTH,
             TARGET_HEIGHT,
@@ -61,43 +67,26 @@ fleet = Fleet(
             (1, 0, 1)
         ), GROUP_SPACING, 4
     )
-    ), TargetsRowSpecs(
-        TargetsGroupSpecs(
-            TargetSpecs(
-                TARGET_WIDTH,
-                TARGET_HEIGHT,
-                (0, 0, 1)
-            ), GROUP_SPACING, 3
-        ), TargetsGroupSpecs(
-            TargetSpecs(
-                TARGET_WIDTH,
-                TARGET_HEIGHT - 10,
-                (1, 0, 1)
-            ), GROUP_SPACING, 7
-        ), TargetsGroupSpecs(
-            TargetSpecs(
-                TARGET_WIDTH,
-                TARGET_HEIGHT,
-                (0, 0, 1)
-            ), GROUP_SPACING, 3
-        )
-    ), TargetsRowSpecs(
-        TargetsGroupSpecs(
-            TargetSpecs(
-                TARGET_WIDTH,
-                TARGET_HEIGHT,
-                (0, 0, 1)
-            ), GROUP_SPACING, 3
-        ), EmptyTargetsGroupSpecs(
-            (TARGET_WIDTH + GROUP_SPACING) * 7
-        ), TargetsGroupSpecs(
-            TargetSpecs(
-                TARGET_WIDTH,
-                TARGET_HEIGHT,
-                (0, 0, 1)
-            ), GROUP_SPACING, 3
-        )
-    ), EmptyTargetsRowSpecs(), TargetsRowSpecs(TargetsGroupSpecs(
+                    ), TargetsRowSpecs(ROW_SPACING, TargetsGroupSpecs(
+        TargetSpecs(
+            TARGET_WIDTH,
+            TARGET_HEIGHT,
+            (0, 0, 1)
+        ), GROUP_SPACING, 3
+    ), TargetsGroupSpecs(
+        TargetSpecs(
+            TARGET_WIDTH,
+            TARGET_HEIGHT - 10,
+            (1, 0, 1)
+        ), GROUP_SPACING, 7
+    ), TargetsGroupSpecs(
+        TargetSpecs(
+            TARGET_WIDTH,
+            TARGET_HEIGHT,
+            (0, 0, 1)
+        ), GROUP_SPACING, 3
+    )
+                                       ), EmptyTargetsRowSpecs(), TargetsRowSpecs(ROW_SPACING, TargetsGroupSpecs(
         TargetSpecs(
             TARGET_WIDTH,
             TARGET_HEIGHT,
@@ -115,8 +104,24 @@ fleet = Fleet(
             TARGET_HEIGHT,
             (1, 0, 1)
         ), GROUP_SPACING, 4
+    )), TargetsRowSpecs(ROW_SPACING, TargetsGroupSpecs(
+        TargetSpecs(
+            TARGET_WIDTH,
+            TARGET_HEIGHT,
+            (0, 0, 1)
+        ), GROUP_SPACING, 3
+    ), EmptyTargetsGroupSpecs(
+        GROUP_SPACING,
+        7,
+        TARGET_WIDTH
+    ), TargetsGroupSpecs(
+        TargetSpecs(
+            TARGET_WIDTH,
+            TARGET_HEIGHT,
+            (0, 0, 1)
+        ), GROUP_SPACING, 3
     )
-    )
+                        )
 )
 
 MOUSE_INITIAL_X = window.inner.horizontal_center()
@@ -132,8 +137,11 @@ mouse = Mouse(
     glutWarpPointer
 )
 
+time_since_slide_down = time.time()
 timeInterval = 1
 is_paused = False
+
+show = True
 
 
 # noinspection PyUnusedLocal
@@ -141,6 +149,15 @@ def mouse_motion(x, y):
     global mouse
     if not is_paused:
         mouse.move(x, y)
+
+
+# noinspection PyUnusedLocal
+def mouse_interaction(button, state, x, y):
+    global show
+    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+        ball.is_glued_to_bat = False
+    elif button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
+        show = not show
 
 
 # noinspection PyUnusedLocal
@@ -167,19 +184,45 @@ def timer(v):
 
 def display():
     glClear(GL_COLOR_BUFFER_BIT)
-    ball.move_one_frame()
+    handle_fleet_slide_down()
+    ball.move_one_frame(bat)
     handle_ball_wall_collision()
     bat.move_by_horizontal_center(mouse)
     handle_ball_bat_collision()
+    handle_ball_fleet_collision()
     draw_results_text(window, result)
     draw_ball(ball)
     draw_bat(bat)
     draw_fleet(window, fleet)
+
+    if show:
+        for row in fleet.rows:
+            if type(row) is not EmptyTargetsRow:
+                for group in row.target_groups:
+                    if type(group) is not EmptyTargetsGroup:
+                        glColor(0.1, 0.1, 0.1)
+                        draw_rectangle(Rectangle(
+                            group.left,
+                            group.bottom(row.bottom(fleet, window), fleet.row_height),
+                            group.left + group.width,
+                            group.bottom(row.bottom(fleet, window), fleet.row_height) + group.target_specs.height
+                        ))
+
     glutSwapBuffers()
+
+
+def handle_fleet_slide_down():
+    global time_since_slide_down
+    if time.time() - time_since_slide_down >= fleet.slide_down_time_gap:
+        fleet.slide_down_if_needed()
+        time_since_slide_down = time.time()
 
 
 def handle_ball_wall_collision():
     global ball
+
+    if ball.is_glued_to_bat:
+        return
 
     collision_direction = detect_collision_from_inside(ball, window.inner)
 
@@ -195,12 +238,14 @@ def handle_ball_wall_collision():
     elif collision_direction.primary == CollisionSide.Primary.BOTTOM:
         if ball.top < window.inner.bottom:  # game over
             ball = Ball(window, BALL_INITIAL_X, BALL_INITIAL_Y, BALL_LENGTH)
-            ball.delta_x = abs(ball.delta_x)
-            ball.delta_y = abs(ball.delta_y)
+            ball.move_one_frame(bat)
             result.pc = result.pc + 1
 
 
 def handle_ball_bat_collision():
+    if ball.is_glued_to_bat:
+        return
+
     collision_direction = detect_collision_from_outside(ball, bat)
 
     if collision_direction is None:
@@ -230,6 +275,32 @@ def handle_ball_bat_collision():
         result.player = result.player + 1
 
 
+def handle_ball_fleet_collision():
+    if ball.is_glued_to_bat:
+        return
+
+    colliding_targets = fleet.targets_interacting_with(ball, window)
+    for target in colliding_targets:
+        handle_ball_target_collision(target)
+
+
+def handle_ball_target_collision(target):
+    collision_direction = detect_collision_from_outside(ball, target)
+
+    if collision_direction is None:
+        return
+
+    result.player = result.player + 1
+    if collision_direction.primary == CollisionSide.Primary.RIGHT:
+        ball.delta_x = abs(ball.delta_x)
+    elif collision_direction.primary == CollisionSide.Primary.LEFT:
+        ball.delta_x = -abs(ball.delta_x)
+    elif collision_direction.primary == CollisionSide.Primary.TOP:
+        ball.delta_y = abs(ball.delta_y)
+    elif collision_direction.primary == CollisionSide.Primary.BOTTOM:
+        ball.delta_y = -abs(ball.delta_y)
+
+
 def init():
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glMatrixMode(GL_PROJECTION)
@@ -249,6 +320,7 @@ def main():
     glutKeyboardFunc(keyboard)
     glutSpecialFunc(keyboard_special)
     glutPassiveMotionFunc(mouse_motion)
+    glutMouseFunc(mouse_interaction)
     glutSetCursor(GLUT_CURSOR_NONE)
     glutFullScreen()
     init()
