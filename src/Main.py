@@ -42,7 +42,7 @@ TARGET_HEIGHT = 20
 
 result = Result()
 
-fleet = Fleet(
+fleet = Fleet.from_specs(
     window,
     FLEET_SPACING,
     FLEET_HORIZONTAL_PADDING,
@@ -124,6 +124,8 @@ fleet = Fleet(
                         )
 )
 
+collided = []
+
 MOUSE_INITIAL_X = window.inner.horizontal_center()
 MOUSE_INITIAL_Y = window.inner.vertical_center()
 MOUSE_X_LOWER_LIMIT = window.inner.left + bat.width() / 2
@@ -195,6 +197,15 @@ def display():
     draw_bat(bat)
     draw_fleet(window, fleet)
 
+    glColor(0.8, 0.8, 0.8)
+    for item in collided:
+        draw_rectangle(Rectangle(
+            item.left,
+            item.bottom,
+            item.right,
+            item.top
+        ))
+
     if show:
         for row in fleet.rows:
             if type(row) is not EmptyTargetsRow:
@@ -222,12 +233,12 @@ def handle_ball_wall_collision():
     global ball
 
     if ball.is_glued_to_bat:
-        return
+        return None
 
     collision_direction = detect_collision_from_inside(ball, window.inner)
 
     if collision_direction is None:
-        return
+        return None
 
     if collision_direction.primary == CollisionSide.Primary.RIGHT:
         ball.delta_x = -abs(ball.delta_x)
@@ -241,15 +252,18 @@ def handle_ball_wall_collision():
             ball.move_one_frame(bat)
             result.pc = result.pc + 1
 
+    return collision_direction
+
 
 def handle_ball_bat_collision():
+
     if ball.is_glued_to_bat:
-        return
+        return None
 
     collision_direction = detect_collision_from_outside(ball, bat)
 
     if collision_direction is None:
-        return
+        return None
 
     if collision_direction.primary == CollisionSide.Primary.RIGHT:
         if collision_direction.secondary == CollisionSide.Secondary.RIGHT_TOP:
@@ -274,21 +288,28 @@ def handle_ball_bat_collision():
         ball.move_by_bottom(bat.top)
         result.player = result.player + 1
 
+    return collision_direction
+
 
 def handle_ball_fleet_collision():
     if ball.is_glued_to_bat:
         return
 
-    colliding_targets = fleet.targets_interacting_with(ball, window)
-    for target in colliding_targets:
-        handle_ball_target_collision(target)
+    interacting_targets = fleet.targets_interacting_with(ball, window)
+    colliding_targets = list(filter(
+        lambda target: handle_ball_target_collision(target) is not None,
+        interacting_targets
+    ))
+
+    if len(colliding_targets) > 0:
+        fleet.remove_targets(colliding_targets)
 
 
 def handle_ball_target_collision(target):
     collision_direction = detect_collision_from_outside(ball, target)
 
     if collision_direction is None:
-        return
+        return None
 
     result.player = result.player + 1
     if collision_direction.primary == CollisionSide.Primary.RIGHT:
@@ -299,6 +320,8 @@ def handle_ball_target_collision(target):
         ball.delta_y = abs(ball.delta_y)
     elif collision_direction.primary == CollisionSide.Primary.BOTTOM:
         ball.delta_y = -abs(ball.delta_y)
+
+    return collision_direction
 
 
 def init():
