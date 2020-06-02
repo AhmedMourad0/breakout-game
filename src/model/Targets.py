@@ -73,15 +73,19 @@ class Fleet:
 
     def _remove_target(self, target, targets_to_tweak):
 
-        def tweak(larger_group_increment, larger_target_decrement):
+        # since all colliding targets are removed at once, the target_index and
+        # group_index of one target may be affected be the removal of another because
+        # we replace the removed target with an empty group, to fix this we tweak other
+        # targets to update their attributes
+        def tweak(added_groups_count, targets_removed_from_group_count):
             for target_to_tweak in targets_to_tweak:
                 if target_to_tweak.row_index == target.row_index:
                     if target_to_tweak.group_index == target.group_index:
                         if target_to_tweak.target_index > target.target_index:
-                            target_to_tweak.target_index -= larger_target_decrement
-                            target_to_tweak.group_index += larger_group_increment
+                            target_to_tweak.target_index -= targets_removed_from_group_count
+                            target_to_tweak.group_index += added_groups_count
                     elif target_to_tweak.group_index > target.group_index:
-                        target_to_tweak.group_index += larger_group_increment
+                        target_to_tweak.group_index += added_groups_count
 
         row = self.rows[target.row_index]
         group = row.target_groups[target.group_index]
@@ -100,8 +104,8 @@ class Fleet:
                     remaining_of_group
                 ]
                 tweak(
-                    larger_group_increment=1,
-                    larger_target_decrement=1
+                    added_groups_count=1,
+                    targets_removed_from_group_count=1
                 )
             elif target.target_index == group.size - 1:
                 empty_group = EmptyTargetsGroup(
@@ -121,8 +125,8 @@ class Fleet:
                     empty_group
                 ]
                 tweak(
-                    larger_group_increment=1,
-                    larger_target_decrement=0
+                    added_groups_count=1,
+                    targets_removed_from_group_count=0
                 )
             else:
                 empty_group = EmptyTargetsGroup(
@@ -150,8 +154,8 @@ class Fleet:
                     right_remaining_of_group
                 ]
                 tweak(
-                    larger_group_increment=2,
-                    larger_target_decrement=target.target_index + 1
+                    added_groups_count=2,
+                    targets_removed_from_group_count=target.target_index + 1
                 )
         else:
             empty_group = EmptyTargetsGroup(
