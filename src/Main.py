@@ -1,10 +1,20 @@
 import time
 
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+
 from src.CollisionDetectors import *
 from src.Drawing import *
-from src.model.CollisionSide import *
-from src.model.Core import *
-from src.model.Targets import *
+from src.model.core.Ball import Ball
+from src.model.core.Bat import Bat
+from src.model.core.Mouse import Mouse
+from src.model.core.Result import Result
+from src.model.core.Wall import Wall
+from src.model.core.Window import Window
+from src.model.targets.Fleet import Fleet
+from src.model.targets.specs.TargetSpecs import TargetSpecs
+from src.model.targets.specs.TargetsGroupSpecs import TargetsGroupSpecs, EmptyTargetsGroupSpecs
+from src.model.targets.specs.TargetsRowSpecs import TargetsRowSpecs, EmptyTargetsRowSpecs
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 500
@@ -124,8 +134,6 @@ fleet = Fleet.from_specs(
                         )
 )
 
-collided = []
-
 MOUSE_INITIAL_X = window.inner.horizontal_center()
 MOUSE_INITIAL_Y = window.inner.vertical_center()
 MOUSE_X_LOWER_LIMIT = window.inner.left + bat.width() / 2
@@ -143,8 +151,6 @@ time_since_slide_down = time.time()
 timeInterval = 1
 is_paused = False
 
-show = True
-
 
 # noinspection PyUnusedLocal
 def mouse_motion(x, y):
@@ -155,11 +161,8 @@ def mouse_motion(x, y):
 
 # noinspection PyUnusedLocal
 def mouse_interaction(button, state, x, y):
-    global show
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
         ball.is_glued_to_bat = False
-    elif button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
-        show = not show
 
 
 # noinspection PyUnusedLocal
@@ -196,29 +199,6 @@ def display():
     draw_ball(ball)
     draw_bat(bat)
     draw_fleet(window, fleet)
-
-    glColor(0.8, 0.8, 0.8)
-    for item in collided:
-        draw_rectangle(Rectangle(
-            item.left,
-            item.bottom,
-            item.right,
-            item.top
-        ))
-
-    if show:
-        for row in fleet.rows:
-            if type(row) is not EmptyTargetsRow:
-                for group in row.target_groups:
-                    if type(group) is not EmptyTargetsGroup:
-                        glColor(0.1, 0.1, 0.1)
-                        draw_rectangle(Rectangle(
-                            group.left,
-                            group.bottom(row.bottom(fleet, window), fleet.row_height),
-                            group.left + group.width,
-                            group.bottom(row.bottom(fleet, window), fleet.row_height) + group.target_specs.height
-                        ))
-
     glutSwapBuffers()
 
 
@@ -256,7 +236,6 @@ def handle_ball_wall_collision():
 
 
 def handle_ball_bat_collision():
-
     if ball.is_glued_to_bat:
         return None
 

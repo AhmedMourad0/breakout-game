@@ -1,4 +1,4 @@
-from src.model.CollisionSide import *
+from src.model.core.CollisionSide import CollisionSide
 
 
 def detect_collision_from_inside(collider, container):

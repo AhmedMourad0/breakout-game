@@ -1,10 +1,12 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 
-from src.model.Targets import *
+from src.model.core.Rectangle import Rectangle
+from src.model.targets.TargetsGroup import EmptyTargetsGroup
+from src.model.targets.TargetsRow import EmptyTargetsRow
 
 
-def draw_rectangle(rect):
+def _draw_rectangle(rect):
     glLoadIdentity()
     glBegin(GL_QUADS)
     glVertex(rect.left, rect.bottom, 0)
