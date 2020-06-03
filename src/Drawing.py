@@ -71,6 +71,24 @@ def draw_bat(bat):
     _draw_rectangle(bat)
 
 
+def draw_bat_landing_pads(window, bat):
+    glColor(1, 1, 1)
+    # left
+    _draw_rectangle(Rectangle(
+        0,
+        bat.bottom,
+        window.wall.left_thickness,
+        bat.top
+    ))
+    # right
+    _draw_rectangle(Rectangle(
+        window.outer.right - window.wall.right_thickness,
+        bat.bottom,
+        window.outer.right,
+        bat.top
+    ))
+
+
 def draw_fleet(window, fleet):
     for row in fleet.rows:
         if row.position_on_screen >= 0 and type(row) is not EmptyTargetsRow:

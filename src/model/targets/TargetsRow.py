@@ -11,12 +11,12 @@ class TargetsRow:
         self.target_groups = target_groups
         self.width = width
 
-    def apply_width_scale(self, width_scale):
-        self.left *= width_scale
+    def apply_width_scale(self, window_inner_left, width_scale):
+        self.left = (self.left - window_inner_left) * width_scale + window_inner_left
         self.width *= width_scale
         self.spacing *= width_scale
         for group in self.target_groups:
-            group.apply_width_scale(width_scale)
+            group.apply_width_scale(window_inner_left, width_scale)
 
     def bottom(self, fleet, window):
         return window.inner.top - self.position_on_screen * (

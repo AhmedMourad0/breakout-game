@@ -10,8 +10,8 @@ class TargetsGroup:
         self.width = width
         self.size = size
 
-    def apply_width_scale(self, width_scale):
-        self.left *= width_scale
+    def apply_width_scale(self, window_inner_left, width_scale):
+        self.left = (self.left - window_inner_left) * width_scale + window_inner_left
         self.width *= width_scale
         self.spacing *= width_scale
         self.target_specs.width *= width_scale
@@ -73,8 +73,8 @@ class EmptyTargetsGroup:
         self.width = width
         self.sealed_balls = sealed_balls
 
-    def apply_width_scale(self, width_scale):
-        self.left *= width_scale
+    def apply_width_scale(self, window_inner_left, width_scale):
+        self.left = (self.left - window_inner_left) * width_scale + window_inner_left
         self.width *= width_scale
 
     @staticmethod

@@ -7,6 +7,6 @@ class TargetsGroupSpecs:
 
 
 class EmptyTargetsGroupSpecs:
-    def __init__(self, spacing, size, target_width, sealed_balls=0):
+    def __init__(self, spacing, size, target_width, sealed_balls):
         self.width = target_width * size + spacing * (size - 1)
         self.sealed_balls = sealed_balls

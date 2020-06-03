@@ -3,7 +3,7 @@ from src.model.core.Rectangle import Rectangle
 
 class Ball(Rectangle):
 
-    def __init__(self, window, initial_x, initial_y, length, delta_x=3, delta_y=3, is_glued_to_bat=True):
+    def __init__(self, window, initial_x, initial_y, length, delta_x, delta_y, is_glued_to_bat):
         super().__init__(initial_x, initial_y, initial_x + length, initial_y + length)
         self.delta_x = delta_x
         self.delta_y = delta_y

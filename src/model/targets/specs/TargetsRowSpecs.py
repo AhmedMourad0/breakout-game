@@ -11,7 +11,7 @@ class TargetsRowSpecs:
 
 
 class EmptyTargetsRowSpecs:
-    def __init__(self, sealed_balls=0):
+    def __init__(self, sealed_balls):
         self.sealed_balls = sealed_balls
 
 

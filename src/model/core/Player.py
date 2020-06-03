@@ -1,6 +1,6 @@
 class Player:
 
-    def __init__(self, score=0, lives=5, has_infinite_lives=False):  # TODO: infinite mode
+    def __init__(self, score, lives, has_infinite_lives):
         self.score = score
         self._lives = lives
         self.has_infinite_lives = has_infinite_lives
@@ -16,5 +16,5 @@ class Player:
         return self.has_infinite_lives or self._lives > 0
 
     @staticmethod
-    def infinite_lives(score=0):
+    def infinite_lives(score):
         return Player(score, 1, True)

@@ -221,7 +221,7 @@ class Fleet:
             window.inner.left + horizontal_padding
         )
         width_scale = Fleet._width_scale_for(horizontal_padding, window, target_rows_specs)
-        Fleet._apply_width_scale(rows, width_scale)
+        Fleet._apply_width_scale(window.inner.left, rows, width_scale)
         return Fleet(
             row_height=max(target_rows_specs, key=_find_row_height).height,
             spacing=spacing,
@@ -233,14 +233,14 @@ class Fleet:
 
     @staticmethod
     def _width_scale_for(horizontal_padding, window, target_rows_specs):
-        max_row_width = max(target_rows_specs, key=_find_row_width).width
-        return (window.inner.width() - horizontal_padding * 2) / max_row_width
+        max_row_width = max(target_rows_specs, key=_find_row_width).width + horizontal_padding * 2
+        return window.inner.width() / max_row_width
 
     @staticmethod
-    def _apply_width_scale(rows, width_scale):
+    def _apply_width_scale(window_inner_left, rows, width_scale):
         for row in rows:
             if type(row) is not EmptyTargetsRow:
-                row.apply_width_scale(width_scale)
+                row.apply_width_scale(window_inner_left, width_scale)
 
 
 def _find_row_width(row):
