@@ -67,12 +67,12 @@ def draw_ball(ball):
 
 
 def draw_bat(bat):
-    glColor(1, 1, 1)
+    glColor(0.7, 0.7, 0.7)
     _draw_rectangle(bat)
 
 
 def draw_bat_landing_pads(window, bat):
-    glColor(1, 1, 1)
+    glColor(0.7, 0.7, 0.7)
     # left
     _draw_rectangle(Rectangle(
         0,
