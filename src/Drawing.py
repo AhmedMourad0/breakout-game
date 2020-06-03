@@ -16,33 +16,59 @@ def _draw_rectangle(rect):
     glEnd()
 
 
-def _draw_text(text, x, y):
-    glLineWidth(2)
+def _draw_text(text, x, y, scale, mono=False, bold=False):
+    if bold:
+        glLineWidth(5)
+    else:
+        glLineWidth(2)
     glColor(1, 1, 0)
     glLoadIdentity()
     glTranslate(x, y, 0)
-    glScale(0.13, 0.13, 1)
+    glScale(scale, scale, 1)
+    if mono:
+        font = GLUT_STROKE_MONO_ROMAN
+    else:
+        font = GLUT_STROKE_ROMAN
     for char in text.encode():
-        glutStrokeCharacter(GLUT_STROKE_ROMAN, char)
+        glutStrokeCharacter(font, char)
 
 
-def draw_results_text(window, result):
-    text = "PC: " + str(result.pc)
-    pc_text_y = window.outer.height() - 60
-    _draw_text(text, 10, pc_text_y)
+def draw_results_text(window, player):
+    bottom = 20
+    left = window.outer.right - 240
+    scale = 0.12
 
-    text = "Player: " + str(result.player)
-    _draw_text(text, 10, pc_text_y - 40)
+    if player.has_infinite_lives:
+        text = "Lives: Infinite"
+    else:
+        text = f"Lives: {str(player.get_lives())}"
+    _draw_text(text, left + 120, bottom, scale)
+
+    text = f"Score: {str(player.score)}"
+    _draw_text(text, left + 10, bottom, scale)
+
+
+def draw_you_won():
+    _draw_text("YOU WON!", 68, 220, 0.8, mono=True, bold=True)
+
+
+def draw_you_lost():
+    _draw_text("YOU LOST!", 30, 220, 0.8, mono=True, bold=True)
+
+
+def draw_level_name(level_name):
+    level_name = f"Level: {level_name}"
+    _draw_text(level_name, 20, 20, 0.12, mono=True)
 
 
 def draw_ball(ball):
     glColor(1, 1, 1)
-    draw_rectangle(ball)
+    _draw_rectangle(ball)
 
 
 def draw_bat(bat):
     glColor(1, 1, 1)
-    draw_rectangle(bat)
+    _draw_rectangle(bat)
 
 
 def draw_fleet(window, fleet):
@@ -83,4 +109,4 @@ def _draw_target(specs, target_left, target_bottom):
         target_bottom + specs.height
     )
     glColor(specs.color[0], specs.color[1], specs.color[2])
-    draw_rectangle(target_rect)
+    _draw_rectangle(target_rect)

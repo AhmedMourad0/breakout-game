@@ -1,153 +1,81 @@
 import time
 
-from OpenGL.GL import *
-from OpenGL.GLUT import *
-
 from src.CollisionDetectors import *
 from src.Drawing import *
+from src.LevelsLoader import *
 from src.model.core.Ball import Ball
 from src.model.core.Bat import Bat
 from src.model.core.Mouse import Mouse
-from src.model.core.Result import Result
+from src.model.core.Player import Player
 from src.model.core.Wall import Wall
 from src.model.core.Window import Window
-from src.model.targets.Fleet import Fleet
-from src.model.targets.specs.TargetSpecs import TargetSpecs
-from src.model.targets.specs.TargetsGroupSpecs import TargetsGroupSpecs, EmptyTargetsGroupSpecs
-from src.model.targets.specs.TargetsRowSpecs import TargetsRowSpecs, EmptyTargetsRowSpecs
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 500
 WINDOW_INSETS = 20
 
-window = Window(WINDOW_WIDTH, WINDOW_HEIGHT, Wall.bottomless(WINDOW_INSETS))
+
+def create_window():
+    return Window(WINDOW_WIDTH, WINDOW_HEIGHT, Wall.bottomless(WINDOW_INSETS))
+
+
+window = create_window()  # TODO: draw wall
 
 BAT_WIDTH = 100
 BAT_HEIGHT = 10
 # this doesn't matter because the mouse motion detector is instantly called when the app is launched
 BAT_INITIAL_X = 0
-BAT_Y = 40
+BAT_Y = 50
 
-bat = Bat(BAT_INITIAL_X, BAT_Y, BAT_WIDTH, BAT_HEIGHT)
 
-BALL_LENGTH = 20
+def create_bat():
+    return Bat(BAT_INITIAL_X, BAT_Y, BAT_WIDTH, BAT_HEIGHT)
+
+
+bat = create_bat()
+
+BALL_LENGTH = 16
 BALL_INITIAL_X = 100
 BALL_INITIAL_Y = 100
 
-ball = Ball(window, BALL_INITIAL_X, BALL_INITIAL_Y, BALL_LENGTH)
 
-FLEET_SPACING = 10
-FLEET_HORIZONTAL_PADDING = 10
-FLEET_INITIALLY_VISIBLE_ROW_COUNT = 5
-FLEET_SLIDE_DOWN_TIME_GAP = 10
+def create_ball():
+    return Ball(window, BALL_INITIAL_X, BALL_INITIAL_Y, BALL_LENGTH)
 
-ROW_VERTICAL_PADDING = 10
-ROW_MAX_TARGETS = 13
-ROW_SPACING = 10
 
-GROUP_SPACING = 10
+ball = create_ball()
 
-TARGET_WIDTH = 50
-TARGET_HEIGHT = 20
 
-result = Result()
+def create_player():
+    return Player.infinite_lives()
 
-fleet = Fleet.from_specs(
-    window,
-    FLEET_SPACING,
-    FLEET_HORIZONTAL_PADDING,
-    FLEET_INITIALLY_VISIBLE_ROW_COUNT,
-    FLEET_SLIDE_DOWN_TIME_GAP,
-    TargetsRowSpecs(ROW_SPACING, TargetsGroupSpecs(
-        TargetSpecs(
-            TARGET_WIDTH,
-            TARGET_HEIGHT,
-            (1, 0, 1)
-        ), GROUP_SPACING, 4
-    ), TargetsGroupSpecs(
-        TargetSpecs(
-            TARGET_WIDTH,
-            TARGET_HEIGHT,
-            (0, 0, 1)
-        ), GROUP_SPACING, 5
-    ), TargetsGroupSpecs(
-        TargetSpecs(
-            TARGET_WIDTH,
-            TARGET_HEIGHT,
-            (1, 0, 1)
-        ), GROUP_SPACING, 4
-    )
-                    ), TargetsRowSpecs(ROW_SPACING, TargetsGroupSpecs(
-        TargetSpecs(
-            TARGET_WIDTH,
-            TARGET_HEIGHT,
-            (0, 0, 1)
-        ), GROUP_SPACING, 3
-    ), TargetsGroupSpecs(
-        TargetSpecs(
-            TARGET_WIDTH,
-            TARGET_HEIGHT - 10,
-            (1, 0, 1)
-        ), GROUP_SPACING, 7
-    ), TargetsGroupSpecs(
-        TargetSpecs(
-            TARGET_WIDTH,
-            TARGET_HEIGHT,
-            (0, 0, 1)
-        ), GROUP_SPACING, 3
-    )
-                                       ), EmptyTargetsRowSpecs(), TargetsRowSpecs(ROW_SPACING, TargetsGroupSpecs(
-        TargetSpecs(
-            TARGET_WIDTH,
-            TARGET_HEIGHT,
-            (1, 0, 1)
-        ), GROUP_SPACING, 4
-    ), TargetsGroupSpecs(
-        TargetSpecs(
-            TARGET_WIDTH,
-            TARGET_HEIGHT,
-            (0, 0, 1)
-        ), GROUP_SPACING, 5
-    ), TargetsGroupSpecs(
-        TargetSpecs(
-            TARGET_WIDTH,
-            TARGET_HEIGHT,
-            (1, 0, 1)
-        ), GROUP_SPACING, 4
-    )), TargetsRowSpecs(ROW_SPACING, TargetsGroupSpecs(
-        TargetSpecs(
-            TARGET_WIDTH,
-            TARGET_HEIGHT,
-            (0, 0, 1)
-        ), GROUP_SPACING, 3
-    ), EmptyTargetsGroupSpecs(
-        GROUP_SPACING,
-        7,
-        TARGET_WIDTH
-    ), TargetsGroupSpecs(
-        TargetSpecs(
-            TARGET_WIDTH,
-            TARGET_HEIGHT,
-            (0, 0, 1)
-        ), GROUP_SPACING, 3
-    )
-                        )
-)
+
+player = create_player()
+
+all_levels = load_levels()
+current_level = all_levels[1]
+
+fleet = current_level.create_fleet(window)
 
 MOUSE_INITIAL_X = window.inner.horizontal_center()
 MOUSE_INITIAL_Y = window.inner.vertical_center()
 MOUSE_X_LOWER_LIMIT = window.inner.left + bat.width() / 2
 MOUSE_X_UPPER_LIMIT = window.inner.right - bat.width() / 2
 
-mouse = Mouse(
-    MOUSE_INITIAL_X,
-    MOUSE_INITIAL_Y,
-    MOUSE_X_LOWER_LIMIT,
-    MOUSE_X_UPPER_LIMIT,
-    glutWarpPointer
-)
 
-time_since_slide_down = time.time()
+def create_mouse():
+    return Mouse(
+        MOUSE_INITIAL_X,
+        MOUSE_INITIAL_Y,
+        MOUSE_X_LOWER_LIMIT,
+        MOUSE_X_UPPER_LIMIT,
+        glutWarpPointer
+    )
+
+
+mouse = create_mouse()
+
+time_since_slide_down = time.time()  # TODO: account for pausing
 timeInterval = 1
 is_paused = False
 
@@ -161,8 +89,12 @@ def mouse_motion(x, y):
 
 # noinspection PyUnusedLocal
 def mouse_interaction(button, state, x, y):
+    global player
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
-        ball.is_glued_to_bat = False
+        if (not player.has_remaining_lives()) or (fleet.is_destroyed() and current_level.is_last_level(all_levels)):
+            restart_from_first_level()
+        else:
+            ball.is_glued_to_bat = False
 
 
 # noinspection PyUnusedLocal
@@ -189,17 +121,54 @@ def timer(v):
 
 def display():
     glClear(GL_COLOR_BUFFER_BIT)
+
+    if fleet.is_destroyed():
+        if current_level.is_last_level(all_levels):
+            draw_you_won()
+        else:
+            move_to_next_level()
+    else:
+        if player.has_remaining_lives():
+            continue_playing()
+        else:
+            draw_you_lost()
+
+    glutSwapBuffers()
+
+
+def continue_playing():
     handle_fleet_slide_down()
     ball.move_one_frame(bat)
     handle_ball_wall_collision()
     bat.move_by_horizontal_center(mouse)
     handle_ball_bat_collision()
     handle_ball_fleet_collision()
-    draw_results_text(window, result)
+    draw_results_text(window, player)
+    draw_level_name(f"{current_level.display_name}")
     draw_ball(ball)
     draw_bat(bat)
     draw_fleet(window, fleet)
-    glutSwapBuffers()
+
+
+def move_to_next_level():
+    move_to_level(current_level.index + 1)
+
+
+def restart_from_first_level():
+    global player
+    move_to_level(0)
+    player = Player()
+
+
+def move_to_level(level_index):
+    global current_level
+    global fleet
+    global time_since_slide_down
+    global ball
+    current_level = all_levels[level_index]
+    fleet = current_level.create_fleet(window)
+    time_since_slide_down = time.time()
+    ball = create_ball()
 
 
 def handle_fleet_slide_down():
@@ -228,9 +197,9 @@ def handle_ball_wall_collision():
         ball.delta_y = -abs(ball.delta_y)
     elif collision_direction.primary == CollisionSide.Primary.BOTTOM:
         if ball.top < window.inner.bottom:  # game over
-            ball = Ball(window, BALL_INITIAL_X, BALL_INITIAL_Y, BALL_LENGTH)
+            ball = create_ball()
             ball.move_one_frame(bat)
-            result.pc = result.pc + 1
+            player.lose_one_life()
 
     return collision_direction
 
@@ -265,12 +234,12 @@ def handle_ball_bat_collision():
     elif collision_direction.primary == CollisionSide.Primary.TOP:
         ball.delta_y = abs(ball.delta_y)
         ball.move_by_bottom(bat.top)
-        result.player = result.player + 1
 
     return collision_direction
 
 
 def handle_ball_fleet_collision():
+
     if ball.is_glued_to_bat:
         return
 
@@ -290,7 +259,7 @@ def handle_ball_target_collision(target):
     if collision_direction is None:
         return None
 
-    result.player = result.player + 1
+    player.score = player.score + 1
     if collision_direction.primary == CollisionSide.Primary.RIGHT:
         ball.delta_x = abs(ball.delta_x)
     elif collision_direction.primary == CollisionSide.Primary.LEFT:

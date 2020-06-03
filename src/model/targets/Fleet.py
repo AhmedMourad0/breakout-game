@@ -65,7 +65,7 @@ class Fleet:
 
         def do_remove_targets(targets):
             if len(targets) > 0:
-                do_remove_targets(self._remove_target(targets.pop(0), targets))
+                do_remove_targets(self._remove_single_target(targets.pop(0), targets))
 
         do_remove_targets(targets_to_remove)
 
@@ -73,7 +73,7 @@ class Fleet:
             self._optimize_row(row_index)
         self._optimize_fleet(shallow=True)
 
-    def _remove_target(self, target, targets_to_tweak):
+    def _remove_single_target(self, target, targets_to_tweak):
 
         # since all colliding targets are removed at once, the target_index and
         # group_index of one target may be affected be the removal of another because
