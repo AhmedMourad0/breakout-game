@@ -104,7 +104,7 @@ def detect_collision_from_outside(collider, obstacle):
 
 
 def _is_within_obstacle_y_area(collider, obstacle):
-    return collider.right >= obstacle.left and collider.left <= obstacle.right
+    return collider.right > obstacle.left and collider.left < obstacle.right
 
 
 def _is_within_obstacle_x_area(collider, obstacle):
