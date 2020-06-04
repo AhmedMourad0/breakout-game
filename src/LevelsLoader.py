@@ -79,11 +79,13 @@ def _parse_fleet(window, fleet_root):
     spacing = fleet_root[KEY_FLEET_SPACING]
     horizontal_padding = fleet_root[KEY_FLEET_HORIZONTAL_PADDING]
     initially_visible_rows_count = fleet_root[KEY_FLEET_INITIALLY_VISIBLE_ROWS_COUNT]
-    slide_down_time_gap = fleet_root[KEY_FLEET_SLIDE_DOWN_TIME_GAP]
     rows_specs = _parse_all_rows_specs(fleet_root[KEY_FLEET_ROWS])
 
     if initially_visible_rows_count == KEY_FLEET_INITIALLY_VISIBLE_ROWS_COUNT_ALL:
         initially_visible_rows_count = len(rows_specs)
+        slide_down_time_gap = 100
+    else:
+        slide_down_time_gap = fleet_root[KEY_FLEET_SLIDE_DOWN_TIME_GAP]
 
     return Fleet.from_specs(
         window,

@@ -3,7 +3,6 @@
     "spacing": 8,
     "horizontal_padding": 8,
     "initially_visible_rows_count": "all",
-    "slide_down_time_gap": 10,
     "rows": [
       {
         "row_type": "empty",
@@ -90,9 +89,23 @@
         "spacing": 8,
         "groups": [
           {
+            "group_type": "normal",
+            "spacing": 8,
+            "size": 1,
+            "target_specs": {
+              "width": 40,
+              "height": 14,
+              "color": [
+                1,
+                1,
+                1
+              ]
+            }
+          },
+          {
             "group_type": "empty",
             "spacing": 8,
-            "size": 2,
+            "size": 1,
             "target_width": 40,
             "sealed_balls": 0
           },
@@ -113,9 +126,23 @@
           {
             "group_type": "empty",
             "spacing": 8,
-            "size": 2,
+            "size": 1,
             "target_width": 40,
             "sealed_balls": 0
+          },
+          {
+            "group_type": "normal",
+            "spacing": 8,
+            "size": 1,
+            "target_specs": {
+              "width": 40,
+              "height": 14,
+              "color": [
+                1,
+                1,
+                1
+              ]
+            }
           }
         ]
       },

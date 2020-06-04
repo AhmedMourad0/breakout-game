@@ -3,7 +3,6 @@
     "spacing": 8,
     "horizontal_padding": 8,
     "initially_visible_rows_count": "all",
-    "slide_down_time_gap": 10,
     "rows": [
       {
         "row_type": "empty",
