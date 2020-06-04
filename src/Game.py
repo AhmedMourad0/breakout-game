@@ -54,8 +54,11 @@ PLAYER_INITIAL_SCORE = 0
 PLAYER_INITIAL_LIVES = 5
 
 
-def create_player():
-    return Player.infinite_lives(PLAYER_INITIAL_SCORE)
+def create_player(is_in_infinite_lives_mode, score=PLAYER_INITIAL_SCORE):
+    if is_in_infinite_lives_mode:
+        return Player.infinite_lives(score)
+    else:
+        return Player.limited_lives(score, PLAYER_INITIAL_LIVES)
 
 
 def create_mouse(window, bat):
@@ -77,9 +80,10 @@ class Game:
 
     def __init__(self):
         self.window = create_window()
+        self._is_in_infinite_lives_mode = False
         self.bat = create_bat()
         self.ball = create_ball(self.window)
-        self.player = create_player()
+        self.player = create_player(self._is_in_infinite_lives_mode)
         self.all_levels = load_levels()
         self.current_level = self.all_levels[0]
         self.fleet = self.current_level.create_fleet(self.window)
@@ -88,6 +92,14 @@ class Game:
         self.time_interval = 1
         self.is_paused = False
         self.time_of_pause = 0
+
+    def set_in_infinite_lives_mode(self, is_in_infinite_lives_mode):
+        if self._is_in_infinite_lives_mode != is_in_infinite_lives_mode:
+            self._is_in_infinite_lives_mode = is_in_infinite_lives_mode
+            self.player = create_player(is_in_infinite_lives_mode, score=self.player.score)
+
+    def is_in_infinite_lives_mode(self):
+        return self._is_in_infinite_lives_mode
 
     def has_won(self):
         return self.fleet.is_destroyed() and self.current_level.is_last_level(self.all_levels)
@@ -104,9 +116,12 @@ class Game:
     def move_to_next_level(self):
         self._move_to_level(self.current_level.index + 1)
 
+    def move_to_previous_level(self):
+        self._move_to_level(self.current_level.index - 1)
+
     def restart_from_first_level(self):
         self._move_to_level(0)
-        self.player = create_player()
+        self.player = create_player(self._is_in_infinite_lives_mode)
 
     def _move_to_level(self, level_index):
         self.current_level = self.all_levels[level_index]

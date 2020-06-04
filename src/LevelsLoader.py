@@ -18,6 +18,8 @@ KEY_FLEET_INITIALLY_VISIBLE_ROWS_COUNT = "initially_visible_rows_count"
 KEY_FLEET_SLIDE_DOWN_TIME_GAP = "slide_down_time_gap"
 KEY_FLEET_ROWS = "rows"
 
+KEY_FLEET_INITIALLY_VISIBLE_ROWS_COUNT_ALL = "all"
+
 KEY_ROW_TYPE = "row_type"
 
 KEY_ROW_TYPE_NORMAL = "normal"
@@ -79,6 +81,10 @@ def _parse_fleet(window, fleet_root):
     initially_visible_rows_count = fleet_root[KEY_FLEET_INITIALLY_VISIBLE_ROWS_COUNT]
     slide_down_time_gap = fleet_root[KEY_FLEET_SLIDE_DOWN_TIME_GAP]
     rows_specs = _parse_all_rows_specs(fleet_root[KEY_FLEET_ROWS])
+
+    if initially_visible_rows_count == KEY_FLEET_INITIALLY_VISIBLE_ROWS_COUNT_ALL:
+        initially_visible_rows_count = len(rows_specs)
+
     return Fleet.from_specs(
         window,
         spacing,

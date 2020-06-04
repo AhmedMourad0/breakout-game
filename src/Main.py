@@ -32,6 +32,14 @@ def keyboard(key, x, y):
 def keyboard_special(key, x, y):
     if key == GLUT_KEY_F11:
         glutFullScreenToggle()
+    elif key == GLUT_KEY_F4:
+        game.set_in_infinite_lives_mode(not game.is_in_infinite_lives_mode())
+    elif key == GLUT_KEY_F5:
+        if not game.current_level.is_first_level():
+            game.move_to_previous_level()
+    elif key == GLUT_KEY_F6:
+        if not game.current_level.is_last_level(game.all_levels):
+            game.move_to_next_level()
 
 
 # noinspection PyUnusedLocal
@@ -58,11 +66,14 @@ def display():
 
 def continue_playing():
     handle_fleet_slide_down()
+
     game.ball.move_one_frame(game.bat)
+    game.bat.follow_mouse(game.mouse)
+
     handle_ball_wall_collision()
-    game.bat.move_by_horizontal_center(game.mouse)
     handle_ball_bat_collision()
     handle_ball_fleet_collision()
+
     draw_bat_landing_pads(game.window, game.bat)
     draw_results_text(game.window, game.player)
     draw_level_name(f"{game.current_level.display_name}")

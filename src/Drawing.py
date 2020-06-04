@@ -38,7 +38,7 @@ def draw_results_text(window, player):
     left = window.outer.right - 240
     scale = 0.12
 
-    if player.has_infinite_lives:
+    if player.has_infinite_lives():
         text = "Lives: Infinite"
     else:
         text = f"Lives: {str(player.get_lives())}"

@@ -10,3 +10,6 @@ class Level:
 
     def is_last_level(self, all_levels):
         return self.index >= (len(all_levels) - 1)
+
+    def is_first_level(self):
+        return self.index <= 0
