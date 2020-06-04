@@ -2,8 +2,8 @@
   "fleet": {
     "spacing": 8,
     "horizontal_padding": 8,
-    "initially_visible_rows_count": 5,
-    "slide_down_time_gap": 10,
+    "initially_visible_rows_count": 3,
+    "slide_down_time_gap": 5,
     "rows": [
       {
         "row_type": "normal",
