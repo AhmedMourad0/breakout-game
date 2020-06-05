@@ -62,7 +62,7 @@ def draw_level_name(level_name):
 
 
 def draw_ball(ball):
-    glColor(1, 1, 1)
+    glColor(0, 1, 1)
     _draw_rectangle(ball)
 
 
