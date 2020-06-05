@@ -1,8 +1,8 @@
 import copy
 
-from src.model.levels.TargetsGroup import EmptyTargetsGroup, TargetsGroup
-from src.model.levels.TargetsRow import EmptyTargetsRow
-from src.model.levels.TargetsRow import TargetsRow
+from src.model.levels.runtime.TargetsGroup import EmptyTargetsGroup, TargetsGroup
+from src.model.levels.runtime.TargetsRow import EmptyTargetsRow
+from src.model.levels.runtime.TargetsRow import TargetsRow
 from src.model.levels.specs.TargetsRowSpecs import EmptyTargetsRowSpecs
 
 

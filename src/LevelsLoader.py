@@ -2,8 +2,8 @@ import json
 import re
 from pathlib import Path
 
-from src.model.levels.Fleet import Fleet
-from src.model.levels.Level import Level
+from src.model.levels.runtime.Fleet import Fleet
+from src.model.levels.runtime.Level import Level
 from src.model.levels.specs.TargetSpecs import TargetSpecs
 from src.model.levels.specs.TargetsGroupSpecs import TargetsGroupSpecs, EmptyTargetsGroupSpecs
 from src.model.levels.specs.TargetsRowSpecs import TargetsRowSpecs, EmptyTargetsRowSpecs

@@ -1,4 +1,4 @@
-from src.model.levels.TargetsGroup import EmptyTargetsGroup, TargetsGroup
+from src.model.levels.runtime.TargetsGroup import EmptyTargetsGroup, TargetsGroup
 from src.model.levels.specs.TargetsGroupSpecs import EmptyTargetsGroupSpecs
 
 

@@ -1,4 +1,4 @@
-from src.model.levels.Target import Target
+from src.model.levels.runtime.Target import Target
 
 
 class TargetsGroup:

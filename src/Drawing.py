@@ -2,8 +2,8 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 
 from src.model.base.Rectangle import Rectangle
-from src.model.levels.TargetsGroup import EmptyTargetsGroup
-from src.model.levels.TargetsRow import EmptyTargetsRow
+from src.model.levels.runtime.TargetsGroup import EmptyTargetsGroup
+from src.model.levels.runtime.TargetsRow import EmptyTargetsRow
 
 
 def _draw_rectangle(rect):
