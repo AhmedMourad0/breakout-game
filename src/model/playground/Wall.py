@@ -8,4 +8,7 @@ class Wall:
 
     @staticmethod
     def bottomless(thickness):
+        """
+        :return: A wall object with zero thickness at its bottom (bottomless)
+        """
         return Wall(thickness, 0, thickness, thickness)

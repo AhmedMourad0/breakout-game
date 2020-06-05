@@ -1,4 +1,4 @@
-from src.model.core.Rectangle import Rectangle
+from src.model.base.Rectangle import Rectangle
 
 
 class Target(Rectangle):

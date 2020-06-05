@@ -1,7 +1,13 @@
-from src.model.core.CollisionSide import CollisionSide
+from src.model.CollisionSide import CollisionSide
 
 
 def detect_collision_from_inside(collider, container):
+    """
+    Detects if the `collider` has collided with the `container` from the inside
+    :param collider: the collider
+    :param container: the container
+    :return: The side of the container where the collision happened
+    """
     if collider.right >= container.right:
         if collider.vertical_center() >= container.vertical_center():
             return CollisionSide(
@@ -51,6 +57,12 @@ def detect_collision_from_inside(collider, container):
 
 
 def detect_collision_from_outside(collider, obstacle):
+    """
+    Detects if the `collider` has collided with the `obstacle` from the outside
+    :param collider: the collider
+    :param obstacle: the obstacle
+    :return: The side of the obstacle where the collision happened
+    """
     if collider.delta_y < 0 and obstacle.top >= collider.bottom >= obstacle.vertical_center() \
             and _is_within_obstacle_y_area(collider, obstacle):
         if collider.horizontal_center() >= obstacle.horizontal_center():
@@ -104,8 +116,20 @@ def detect_collision_from_outside(collider, obstacle):
 
 
 def _is_within_obstacle_y_area(collider, obstacle):
+    """
+    If we imagine that the obstacle is a column that extends vertically from
+     top of the screen to the bottom, this returns whether or not the collider
+     is intersecting with said column
+    :return: True if the collider is within the obstacle's y area, False otherwise
+    """
     return collider.right > obstacle.left and collider.left < obstacle.right
 
 
 def _is_within_obstacle_x_area(collider, obstacle):
+    """
+    If we imagine that the obstacle is a row that extends horizontally from
+     left of the screen to the right, this returns whether or not the collider
+     is intersecting with said row
+    :return: True if the collider is within the obstacle's x area, False otherwise
+    """
     return collider.top >= obstacle.bottom and collider.bottom <= obstacle.top
