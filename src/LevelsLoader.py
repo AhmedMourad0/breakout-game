@@ -211,7 +211,7 @@ def _parse_target_specs(target_root):
     """
     width = target_root[KEY_TARGET_WIDTH]
     height = target_root[KEY_TARGET_HEIGHT]
-    color = tuple(target_root[KEY_TARGET_COLOR])
+    color = tuple(element / 255 for element in target_root[KEY_TARGET_COLOR])
     return TargetSpecs(
         width,
         height,
