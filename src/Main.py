@@ -90,56 +90,56 @@ def handle_ball_wall_collision():
     if game.ball.is_glued_to_bat:
         return None
 
-    collision_direction = detect_collision_from_inside(game.ball, game.window.inner)
+    collision_side = detect_collision_from_inside(game.ball, game.window.inner)
 
-    if collision_direction is None:
+    if collision_side is None:
         return None
 
-    if collision_direction.primary == CollisionSide.Primary.RIGHT:
+    if collision_side.primary == CollisionSide.Primary.RIGHT:
         game.ball.delta_x = -abs(game.ball.delta_x)
-    elif collision_direction.primary == CollisionSide.Primary.LEFT:
+    elif collision_side.primary == CollisionSide.Primary.LEFT:
         game.ball.delta_x = abs(game.ball.delta_x)
-    elif collision_direction.primary == CollisionSide.Primary.TOP:
+    elif collision_side.primary == CollisionSide.Primary.TOP:
         game.ball.delta_y = -abs(game.ball.delta_y)
-    elif collision_direction.primary == CollisionSide.Primary.BOTTOM:
+    elif collision_side.primary == CollisionSide.Primary.BOTTOM:
         if game.ball.top < game.window.inner.bottom:  # game over
             game.lose_one_life()
 
-    return collision_direction
+    return collision_side
 
 
 def handle_ball_bat_collision():
     if game.ball.is_glued_to_bat:
         return None
 
-    collision_direction = detect_collision_from_outside(game.ball, game.bat)
+    collision_side = detect_collision_from_outside(game.ball, game.bat)
 
-    if collision_direction is None:
+    if collision_side is None:
         return None
 
-    if collision_direction.primary == CollisionSide.Primary.RIGHT:
-        if collision_direction.secondary == CollisionSide.Secondary.RIGHT_TOP:
+    if collision_side.primary == CollisionSide.Primary.RIGHT:
+        if collision_side.secondary == CollisionSide.Secondary.RIGHT_TOP:
             game.ball.delta_x = abs(game.ball.delta_x)
             game.ball.delta_y = abs(game.ball.delta_y)
             game.ball.move_by_left(game.bat.right)
-        elif collision_direction.secondary == CollisionSide.Secondary.RIGHT_BOTTOM:
+        elif collision_side.secondary == CollisionSide.Secondary.RIGHT_BOTTOM:
             game.ball.delta_x = abs(game.ball.delta_x)
             game.ball.delta_y = -abs(game.ball.delta_y)
             game.ball.move_by_left(game.bat.right)
-    elif collision_direction.primary == CollisionSide.Primary.LEFT:
-        if collision_direction.secondary == CollisionSide.Secondary.LEFT_TOP:
+    elif collision_side.primary == CollisionSide.Primary.LEFT:
+        if collision_side.secondary == CollisionSide.Secondary.LEFT_TOP:
             game.ball.delta_x = -abs(game.ball.delta_x)
             game.ball.delta_y = abs(game.ball.delta_y)
             game.ball.move_by_right(game.bat.left)
-        elif collision_direction.secondary == CollisionSide.Secondary.LEFT_BOTTOM:
+        elif collision_side.secondary == CollisionSide.Secondary.LEFT_BOTTOM:
             game.ball.delta_x = -abs(game.ball.delta_x)
             game.ball.delta_y = -abs(game.ball.delta_y)
             game.ball.move_by_right(game.bat.left)
-    elif collision_direction.primary == CollisionSide.Primary.TOP:
+    elif collision_side.primary == CollisionSide.Primary.TOP:
         game.ball.delta_y = abs(game.ball.delta_y)
         game.ball.move_by_bottom(game.bat.top)
 
-    return collision_direction
+    return collision_side
 
 
 def handle_ball_fleet_collision():
@@ -157,22 +157,22 @@ def handle_ball_fleet_collision():
 
 
 def handle_ball_target_collision(target):
-    collision_direction = detect_collision_from_outside(game.ball, target)
+    collision_side = detect_collision_from_outside(game.ball, target)
 
-    if collision_direction is None:
+    if collision_side is None:
         return None
 
     game.player.score = game.player.score + 1
-    if collision_direction.primary == CollisionSide.Primary.RIGHT:
+    if collision_side.primary == CollisionSide.Primary.RIGHT:
         game.ball.delta_x = abs(game.ball.delta_x)
-    elif collision_direction.primary == CollisionSide.Primary.LEFT:
+    elif collision_side.primary == CollisionSide.Primary.LEFT:
         game.ball.delta_x = -abs(game.ball.delta_x)
-    elif collision_direction.primary == CollisionSide.Primary.TOP:
+    elif collision_side.primary == CollisionSide.Primary.TOP:
         game.ball.delta_y = abs(game.ball.delta_y)
-    elif collision_direction.primary == CollisionSide.Primary.BOTTOM:
+    elif collision_side.primary == CollisionSide.Primary.BOTTOM:
         game.ball.delta_y = -abs(game.ball.delta_y)
 
-    return collision_direction
+    return collision_side
 
 
 def init():
