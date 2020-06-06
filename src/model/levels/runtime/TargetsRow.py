@@ -36,7 +36,7 @@ class TargetsRow:
                 fleet.row_height + fleet.spacing
         ) - fleet.row_height
 
-    def _is_interacting_with(self, collider, fleet, window):
+    def _is_intersecting_with(self, collider, fleet, window):
         """
         :param collider: the collider to check against
         :param fleet: the fleet this row is part of
@@ -48,7 +48,7 @@ class TargetsRow:
         row_top = row_bottom + fleet.row_height
         return collider.top >= row_bottom and collider.bottom <= row_top
 
-    def targets_interacting_with(self, collider, fleet, window, row_index):
+    def targets_intersecting_with(self, collider, fleet, window, row_index):
         """
         Find the targets from this row that are in the collider's reach
         :param collider: the collider to check against
@@ -57,14 +57,14 @@ class TargetsRow:
         :param row_index: the zero-based index of this row in the fleet it's part of
         :return: All the targets from the groups that are in the collider's reach
         """
-        if not self._is_interacting_with(collider, fleet, window):
+        if not self._is_intersecting_with(collider, fleet, window):
             return []
 
-        interacting_targets = []
+        intersecting_targets = []
 
         for index, group in enumerate(self.target_groups):
             if type(group) is not EmptyTargetsGroup:
-                interacting_targets += group.targets_interacting_with(
+                intersecting_targets += group.targets_intersecting_with(
                     collider,
                     self.bottom(fleet, window),
                     fleet.row_height,
@@ -72,7 +72,7 @@ class TargetsRow:
                     index
                 )
 
-        return interacting_targets
+        return intersecting_targets
 
     @staticmethod
     def from_specs(specs, left, position_on_screen):

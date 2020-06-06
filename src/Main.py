@@ -146,10 +146,10 @@ def handle_ball_fleet_collision():
     if game.ball.is_glued_to_bat:
         return
 
-    interacting_targets = game.fleet.targets_interacting_with(game.ball, game.window)
+    intersecting_targets = game.fleet.targets_intersecting_with(game.ball, game.window)
     colliding_targets = list(filter(
         lambda target: handle_ball_target_collision(target) is not None,
-        interacting_targets
+        intersecting_targets
     ))
 
     if len(colliding_targets) > 0:

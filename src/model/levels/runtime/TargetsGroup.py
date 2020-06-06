@@ -47,7 +47,7 @@ class TargetsGroup:
         """
         return target_left + self.target_specs.width
 
-    def is_interacting_with(self, collider, row_bottom, row_height):
+    def is_intersecting_with(self, collider, row_bottom, row_height):
         """
         :param collider: the collider to check against
         :param row_bottom: The bottom of the row this group is part of
@@ -62,7 +62,7 @@ class TargetsGroup:
         return collider.right >= group_left and collider.left <= group_right and \
                collider.top >= group_bottom and collider.bottom <= group_top
 
-    def targets_interacting_with(self, collider, row_bottom, row_height, row_index, group_index):
+    def targets_intersecting_with(self, collider, row_bottom, row_height, row_index, group_index):
         """
         Find the targets from this group that are in the collider's reach
         :param collider: the collider to check against
@@ -73,14 +73,14 @@ class TargetsGroup:
         :param group_index: the zero-based index of this group in the row it's part of
         :return: All the targets from this group that are in the collider's reach
         """
-        if not self.is_interacting_with(collider, row_bottom, row_height):
+        if not self.is_intersecting_with(collider, row_bottom, row_height):
             return []
 
-        interacting_targets = []
+        intersecting_targets = []
 
         for index in range(self.size):
             target_left = self.target_left(index)
-            interacting_targets.append(
+            intersecting_targets.append(
                 Target(
                     target_left,
                     self.bottom(row_bottom, row_height),
@@ -91,7 +91,7 @@ class TargetsGroup:
                 )
             )
 
-        return interacting_targets
+        return intersecting_targets
 
     @staticmethod
     def from_specs(specs, left):

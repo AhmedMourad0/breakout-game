@@ -50,7 +50,7 @@ class Fleet:
                visible_rows_count * self.row_height - \
                (visible_rows_count - 1) * self.spacing
 
-    def _is_interacting_with(self, collider, window):
+    def _is_intersecting_with(self, collider, window):
         """
         :param collider: the collider to check against
         :param window: the window the fleet is rendered in
@@ -59,7 +59,7 @@ class Fleet:
         """
         return collider.top >= self.bottom(window)
 
-    def targets_interacting_with(self, collider, window):
+    def targets_intersecting_with(self, collider, window):
         """
         Find the targets from this fleet that are in the collider's reach
         :param collider: the collider to check against
@@ -67,16 +67,16 @@ class Fleet:
         :return: All the targets from the groups that are in the collider's reach
         """
 
-        if not self._is_interacting_with(collider, window):
+        if not self._is_intersecting_with(collider, window):
             return []
 
-        interacting_targets = []
+        intersecting_targets = []
 
         for index, row in enumerate(self.rows):
             if type(row) is not EmptyTargetsRow and row.position_on_screen >= 0:
-                interacting_targets += row.targets_interacting_with(collider, self, window, index)
+                intersecting_targets += row.targets_intersecting_with(collider, self, window, index)
 
-        return interacting_targets
+        return intersecting_targets
 
     def is_destroyed(self):
         """
@@ -371,7 +371,7 @@ def _construct_targets_rows(initially_visible_rows_count, targets_rows_specs, le
     rows = []
     for index, specs in enumerate(targets_rows_specs):
         if type(specs) is EmptyTargetsRowSpecs:
-            rows.append(EmptyTargetsRow(specs, starting_position + index))
+            rows.append(EmptyTargetsRow.from_specs(specs, starting_position + index))
         else:
             rows.append(TargetsRow.from_specs(specs, left, starting_position + index))
     return rows
