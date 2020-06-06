@@ -194,7 +194,7 @@ class Game:
 
     def slide_fleet_down(self):
         """
-        Slides the fleet down if the fleet's slide down time gap has passes
+        Slides the fleet down if the fleet's slide down time gap has passed
         """
         if time.time() - self.last_slide_down_time >= self.fleet.slide_down_time_gap:
             self.fleet.slide_down_if_needed()
