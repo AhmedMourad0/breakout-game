@@ -87,7 +87,7 @@ class TargetsRow:
             spacing=specs.spacing,
             left=left,
             position_on_screen=position_on_screen,
-            target_groups=_construct_targets_groups(left, specs.spacing, specs.target_groups_specs),
+            target_groups=_groups_specs_to_groups(left, specs.spacing, specs.target_groups_specs),
             width=specs.width
         )
 
@@ -110,7 +110,7 @@ class EmptyTargetsRow:
         return EmptyTargetsRow(specs.sealed_balls, position_on_screen)
 
 
-def _construct_targets_groups(row_left, row_spacing, targets_groups_specs):
+def _groups_specs_to_groups(row_left, row_spacing, targets_groups_specs):
     """
     Constructs the fleet's groups from their specs
     :param row_left: The x coordinate this row starts from
@@ -126,5 +126,4 @@ def _construct_targets_groups(row_left, row_spacing, targets_groups_specs):
         else:
             groups.append(TargetsGroup.from_specs(specs, left))
         left += (specs.width + row_spacing)
-    left -= row_spacing  # Remove extra spacing at the end
     return groups

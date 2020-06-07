@@ -290,7 +290,7 @@ class Fleet:
         :param target_rows_specs: The specs of the rows of this fleet
         :return: The fleet
         """
-        rows = _construct_targets_rows(
+        rows = _rows_specs_to_rows(
             initially_visible_rows_count,
             target_rows_specs,
             window.inner.left + horizontal_padding
@@ -358,7 +358,7 @@ def _find_row_height(row):
         return row.height
 
 
-def _construct_targets_rows(initially_visible_rows_count, targets_rows_specs, left):
+def _rows_specs_to_rows(initially_visible_rows_count, targets_rows_specs, left):
     """
     Constructs the fleet's rows from their specs
     :param initially_visible_rows_count: the initial number of rows visible on the screen
