@@ -94,7 +94,7 @@ def draw_ball(ball):
     Draws a ball on the screen
     :param ball: the ball to draw
     """
-    glColor(0, 1, 1)
+    glColor(1, 0.6, 1)
     _draw_rectangle(ball)
 
 
