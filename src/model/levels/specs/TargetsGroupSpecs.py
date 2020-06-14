@@ -8,8 +8,7 @@ class TargetsGroupSpecs:
 
 
 class EmptyTargetsGroupSpecs:
-    def __init__(self, spacing, size, target_width, sealed_balls):
+    def __init__(self, spacing, size, target_width):
         # We take spacing, size and target_width instead of just raw width for convenience
         # A group's width is the sum of its levels width and the spacing between them
         self.width = target_width * size + spacing * (size - 1)
-        self.sealed_balls = sealed_balls

@@ -13,8 +13,7 @@ class TargetsRowSpecs:
 
 
 class EmptyTargetsRowSpecs:
-    def __init__(self, sealed_balls):
-        self.sealed_balls = sealed_balls
+    pass
 
 
 def _find_group_height(group):

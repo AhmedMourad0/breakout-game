@@ -28,8 +28,6 @@ KEY_ROW_TYPE_EMPTY = "empty"
 KEY_NORMAL_ROW_SPACING = "spacing"
 KEY_NORMAL_ROW_GROUPS = "groups"
 
-KEY_EMPTY_ROW_SEALED_BALLS = "sealed_balls"
-
 KEY_GROUP_TYPE = "group_type"
 
 KEY_GROUP_TYPE_NORMAL = "normal"
@@ -42,7 +40,6 @@ KEY_NORMAL_GROUP_TARGET_SPECS = "target_specs"
 KEY_EMPTY_GROUP_SPACING = "spacing"
 KEY_EMPTY_GROUP_SIZE = "size"
 KEY_EMPTY_GROUP_TARGET_WIDTH = "target_width"
-KEY_EMPTY_GROUP_SEALED_BALLS = "sealed_balls"
 
 KEY_TARGET_WIDTH = "width"
 KEY_TARGET_HEIGHT = "height"
@@ -146,8 +143,7 @@ def _parse_row_specs(row_root):
         )
 
     def parse_empty_row():
-        sealed_balls = row_root[KEY_EMPTY_ROW_SEALED_BALLS]
-        return EmptyTargetsRowSpecs(sealed_balls)
+        return EmptyTargetsRowSpecs()
 
     row_type = row_root[KEY_ROW_TYPE].lower()
 
@@ -187,12 +183,10 @@ def _parse_group_specs(group_root):
         spacing = group_root[KEY_EMPTY_GROUP_SPACING]
         size = group_root[KEY_EMPTY_GROUP_SIZE]
         target_width = group_root[KEY_EMPTY_GROUP_TARGET_WIDTH]
-        sealed_balls = group_root[KEY_EMPTY_GROUP_SEALED_BALLS]
         return EmptyTargetsGroupSpecs(
             spacing,
             size,
-            target_width,
-            sealed_balls
+            target_width
         )
 
     group_type = group_root[KEY_GROUP_TYPE].lower()

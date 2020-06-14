@@ -94,8 +94,7 @@ class TargetsRow:
 
 class EmptyTargetsRow:
 
-    def __init__(self, sealed_balls, position_on_screen):
-        self.sealed_balls = sealed_balls
+    def __init__(self, position_on_screen):
         # This's negative if the row is visible on the screen
         self.position_on_screen = position_on_screen
 
@@ -107,7 +106,7 @@ class EmptyTargetsRow:
         :param position_on_screen: The zero-based position of this row on the screen
         :return: The row
         """
-        return EmptyTargetsRow(specs.sealed_balls, position_on_screen)
+        return EmptyTargetsRow(position_on_screen)
 
 
 def _groups_specs_to_groups(row_left, row_spacing, targets_groups_specs):

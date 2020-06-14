@@ -131,7 +131,7 @@ class Fleet:
                         target_to_tweak.group_index += added_groups_count
 
         def on_target_at_head_of_group():
-            empty_group = EmptyTargetsGroup(target.left, target.width() + group.spacing, 0)
+            empty_group = EmptyTargetsGroup(target.left, target.width() + group.spacing)
             remaining_of_group = TargetsGroup(
                 target.left + empty_group.width,
                 group.target_specs,
@@ -151,8 +151,7 @@ class Fleet:
         def on_target_at_tail_of_group():
             empty_group = EmptyTargetsGroup(
                 target.left - group.spacing,
-                target.width() + group.spacing,
-                0
+                target.width() + group.spacing
             )
             remaining_of_group = TargetsGroup(
                 group.left,
@@ -173,8 +172,7 @@ class Fleet:
         def on_target_at_middle_of_group():
             empty_group = EmptyTargetsGroup(
                 target.left - group.spacing,
-                target.width() + 2 * group.spacing,
-                0
+                target.width() + 2 * group.spacing
             )
             left_remaining_of_group = TargetsGroup(
                 group.left,
@@ -203,8 +201,7 @@ class Fleet:
         def on_single_target_group():
             empty_group = EmptyTargetsGroup(
                 target.left,
-                target.width(),
-                0
+                target.width()
             )
             row.target_groups[target.group_index] = empty_group
 
@@ -261,12 +258,11 @@ class Fleet:
                     if type(last_group) is EmptyTargetsGroup:
                         groups[-1] = EmptyTargetsGroup(
                             last_group.left,
-                            last_group.width + group.width,
-                            last_group.sealed_balls + group.sealed_balls
+                            last_group.width + group.width
                         )
 
         if len(groups) == 1 and type(groups[0]) is EmptyTargetsGroup:
-            self.rows[row_index] = EmptyTargetsRow(groups[0].sealed_balls, row.position_on_screen)
+            self.rows[row_index] = EmptyTargetsRow(row.position_on_screen)
         else:
             row.target_groups = groups
 

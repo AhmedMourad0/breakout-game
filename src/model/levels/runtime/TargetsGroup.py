@@ -112,10 +112,9 @@ class TargetsGroup:
 
 class EmptyTargetsGroup:
 
-    def __init__(self, left, width, sealed_balls):
+    def __init__(self, left, width):
         self.left = left
         self.width = width
-        self.sealed_balls = sealed_balls
 
     def apply_width_scale(self, window, width_scale):
         """
@@ -138,6 +137,5 @@ class EmptyTargetsGroup:
         """
         return EmptyTargetsGroup(
             left=left,
-            width=specs.width,
-            sealed_balls=specs.sealed_balls
+            width=specs.width
         )

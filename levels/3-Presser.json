@@ -102,8 +102,7 @@
         ]
       },
       {
-        "row_type": "empty",
-        "sealed_balls": 0
+        "row_type": "empty"
       },
       {
         "row_type": "normal",
@@ -175,8 +174,7 @@
             "group_type": "empty",
             "spacing": 8,
             "size": 7,
-            "target_width": 40,
-            "sealed_balls": 0
+            "target_width": 40
           },
           {
             "group_type": "normal",
