@@ -201,6 +201,5 @@ def main():
     glutMainLoop()
 
 
-# TODO: sound and textures
 if __name__ == '__main__':
     main()
